@@ -1,4 +1,4 @@
-### Этот репозиторий представляет собой выполненное мной тестовое задание на стажерскую позицию в компанию Yadro.
+### Этот репозиторий представляет собой выполненное тестовое задание.
 
 ### Задание
 Задан CSV-файл (comma-separated values) с заголовком, в котором перечислены названия столбцов. Строки нумеруются
@@ -15,22 +15,73 @@
 2. Начинаю рекурсивно высчитывать значения каждой ячейки в порядке очереди и добавляю их в результирующий слайс `[]string` из строк таблицы.
 3. Печатаю результат в консоль
 
+
 ### Инструкция по запуску
 - добавить тестовые файлы в директорию проекта `data` 
 - запустить в директории проекта `cmd/app` команду `go run . filename`, где `filename` - это имя тестируемого файла
 
-### Пример работы
+### Пример корректной работы
 ```shell
-ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ cat ../../data/myTest2.csv
+ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ cat ../../data/correctTest.csv
 ,A,B,C,D
 1,1,0,1,=A1*C30
 2,2,=A1+C30,0,=D1+B2
 30,0,=B1+A1,5,=B2-D1
 
-ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ go run . myTest2.csv
+ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ go run . correctTest.csv
 ,A,B,C,D
 1,1,0,1,5
 2,2,6,0,11
 30,0,1,5,1
+```
 
+### Пример некорректной работы
+* Повторяющееся название столбца
+```shell
+ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ cat ../../data/dublicateField.csv 
+,A,B,C,D,B
+1,1,0,1,=A1*C30,1
+2,2,=A1+C30,0,=D1+B2,1
+30,0,=B1+A1,5,=B2-D1,1
+
+ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ go run . dublicateField.csv
+2023/01/26 13:04:56 check CSV-file: duplicate field 'B' found
+exit status 1
+```
+* Повторяющееся название строки
+```shell
+ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ cat ../../data/dublicateRow.csv 
+,A,B,C,D,E
+1,1,0,1,=A1*C30,1
+2,2,=A1+C30,0,=D1+B2,1
+30,0,=B1+A1,5,=B2-D1,1
+2,1,1,1,1,1
+
+ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ go run . dublicateRow.csv
+2023/01/26 13:08:13 check CSV-file: duplicate row '2' found
+exit status 1
+```
+* Несуществующий адрес ячейки
+```shell
+ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ cat ../../data/incorrectCell.csv 
+,A,B,C,D,E
+1,1,0,1,=A1*C30,=E5+7
+2,2,=A1+C30,0,=D1+B2,1
+30,0,=B1+A1,5,=B2-D1,1
+
+ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ go run . incorrectCell.csv
+2023/01/26 13:10:42 check CSV-file: cell [field:E row:5] does not exist
+exit status 1
+```
+* Бесконечная рекурсия при подсчете выражения в ячейках
+```shell
+ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ cat ../../data/infinityRecursion.csv 
+,A,B,Cell,D
+1,1,0,1,=D1+D1
+2,2,=A1+Cell30,0,1
+30,0,=B1+A1,5,1
+
+ni@ni-asus:~/GolandProjects/yadroTest/cmd/app$ go run . infinityRecursion.csv
+2023/01/26 13:13:35 end by timeout, maybe self-pointer value in data, check you CSV-file
+exit status 1
 ```

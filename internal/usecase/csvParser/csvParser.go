@@ -165,6 +165,7 @@ func returnValueOfExpression(str string) string {
 	if exp.arg1[0] == '=' {
 		exp.arg1 = returnValueOfExpression(exp.arg1)
 	}
+
 	exp.arg2 = arguments[1]
 	if exp.arg2[0] == '=' {
 		exp.arg2 = returnValueOfExpression(exp.arg2)

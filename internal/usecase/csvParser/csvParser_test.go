@@ -6,7 +6,7 @@ import (
 )
 
 func TestHashTableOfCsvFile(t *testing.T) {
-	const dataPath = "../../../data/myTest.csv"
+	const dataPath = "../../../data/correctTest.csv"
 	HashTableOfCsvFile(dataPath)
 	testHash := map[string]map[string]string{
 		"A":    {"1": "1", "2": "2", "30": "0"},
